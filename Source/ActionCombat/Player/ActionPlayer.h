@@ -8,6 +8,7 @@
 #include "ActionPlayer.generated.h"
 
 
+class UActionLockOnComponent;
 class USpringArmComponent;
 class UCameraComponent;
 class UInputMappingContext;
@@ -44,11 +45,17 @@ protected:
 
 	UPROPERTY(EditAnywhere, Category="Input")
 	TObjectPtr<UInputAction> JumpAction;
-
 	
+	UPROPERTY(EditAnywhere, Category="Input")
+	TObjectPtr<UInputAction> LockCameraAction;
+
+	//Component
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Components")
+	TObjectPtr<UActionLockOnComponent>ActionLockOnComponent;
 	
 	void Move(const FInputActionValue& Value);
 	void Look(const FInputActionValue& Value);
+	void LockCamera();
 	
 	
 	virtual void BeginPlay() override;

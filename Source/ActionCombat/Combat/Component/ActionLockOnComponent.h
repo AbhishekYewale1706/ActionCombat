@@ -6,22 +6,31 @@
 #include "Components/ActorComponent.h"
 #include "ActionLockOnComponent.generated.h"
 
+class ACharacter;
+class UCharacterMovementComponent;
 
 UCLASS(ClassGroup=(Custom), meta=(BlueprintSpawnableComponent))
 class ACTIONCOMBAT_API UActionLockOnComponent : public UActorComponent
 {
 	GENERATED_BODY()
 
-public:
-	// Sets default values for this component's properties
-	UActionLockOnComponent();
+private:	
+	 TObjectPtr<ACharacter>OwnerRef;
+	 TObjectPtr<APlayerController> ControllerRef;
+	 TObjectPtr<UCharacterMovementComponent> CharacterMovementRef;
+	
 
 protected:
-	// Called when the game starts
 	virtual void BeginPlay() override;
-
+	
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	float Radius=750.f;
+	
 public:
-	// Called every frame
-	virtual void TickComponent(float DeltaTime, ELevelTick TickType,
-	                           FActorComponentTickFunction* ThisTickFunction) override;
+	
+	UFUNCTION(BlueprintCallable)
+	void StartLockOn();
+	
+	UActionLockOnComponent();
+	virtual void TickComponent(float DeltaTime, ELevelTick TickType,FActorComponentTickFunction* ThisTickFunction) override;
 };

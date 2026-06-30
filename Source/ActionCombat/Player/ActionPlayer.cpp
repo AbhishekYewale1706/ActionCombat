@@ -7,6 +7,7 @@
 #include "EnhancedInputComponent.h"
 #include "EnhancedInputSubsystems.h"
 #include "InputAction.h"
+#include "ActionCombat/Combat/Component/ActionLockOnComponent.h"
 
 AActionPlayer::AActionPlayer()
 {
@@ -27,6 +28,9 @@ AActionPlayer::AActionPlayer()
 	FollowCamera =CreateDefaultSubobject<UCameraComponent>("FollowCamera");
 	FollowCamera->SetupAttachment(CameraBoom);
 	FollowCamera->bUsePawnControlRotation = false;
+	
+	//Custom Component
+	ActionLockOnComponent=CreateDefaultSubobject<UActionLockOnComponent>("ActionLockOnComponent");
 }
 
 void AActionPlayer::BeginPlay()
@@ -50,6 +54,7 @@ void AActionPlayer::SetupPlayerInputComponent(UInputComponent* PlayerInputCompon
 	Input->BindAction(LookAction,ETriggerEvent::Triggered,this,&AActionPlayer::Look);
 	Input->BindAction(JumpAction,ETriggerEvent::Started,this,&ACharacter::Jump);
 	Input->BindAction(JumpAction,ETriggerEvent::Completed,this,&ACharacter::StopJumping);
+	Input->BindAction(LockCameraAction,ETriggerEvent::Started,this,&AActionPlayer::LockCamera);
 }
 
 void AActionPlayer::Move(const FInputActionValue& Value)
@@ -72,4 +77,9 @@ void AActionPlayer::Look(const FInputActionValue& Value)
 	FVector2D LookAxis =Value.Get<FVector2D>();
 	AddControllerYawInput(LookAxis.X);
 	AddControllerPitchInput(LookAxis.Y);
+}
+
+void AActionPlayer::LockCamera()
+{
+	ActionLockOnComponent->StartLockOn();
 }
