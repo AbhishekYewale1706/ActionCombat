@@ -14,7 +14,9 @@ class ACTIONCOMBAT_API UActionPlayerAnimInstance : public UAnimInstance
 {
 	GENERATED_BODY()
 public:
-
+	UPROPERTY(BlueprintReadOnly, Category="Movement")
+	bool bIsCombat = false;
+	
 	virtual void NativeInitializeAnimation() override;
 	virtual void NativeUpdateAnimation(float DeltaSeconds) override;
 
@@ -31,7 +33,8 @@ protected:
 
 	UPROPERTY(BlueprintReadOnly, Category="Movement")
 	bool bIsAccelerating = false;
-
+	
+	
 	UPROPERTY(BlueprintReadOnly, Category="Movement")
 	FVector Velocity;
 
@@ -39,5 +42,6 @@ protected:
 	FVector Acceleration;
 
 private:
+	
 	class ACharacter* Character;
 };

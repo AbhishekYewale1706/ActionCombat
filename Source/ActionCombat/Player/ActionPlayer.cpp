@@ -8,6 +8,7 @@
 #include "EnhancedInputSubsystems.h"
 #include "InputAction.h"
 #include "ActionCombat/Combat/Component/ActionLockOnComponent.h"
+#include "Animation/ActionPlayerAnimInstance.h"
 
 AActionPlayer::AActionPlayer()
 {
@@ -24,18 +25,32 @@ AActionPlayer::AActionPlayer()
 	CameraBoom->SetupAttachment(RootComponent);
 	CameraBoom->TargetArmLength = 350.f;
 	CameraBoom->bUsePawnControlRotation = true;
+	CameraBoom->bEnableCameraLag = true;
+	CameraBoom->bEnableCameraRotationLag = true;
 
 	FollowCamera =CreateDefaultSubobject<UCameraComponent>("FollowCamera");
 	FollowCamera->SetupAttachment(CameraBoom);
 	FollowCamera->bUsePawnControlRotation = false;
 	
-	//Custom Component
-	ActionLockOnComponent=CreateDefaultSubobject<UActionLockOnComponent>("ActionLockOnComponent");
+	WeaponMesh = CreateDefaultSubobject<UStaticMeshComponent>("WeaponMesh");
+	WeaponMesh->SetupAttachment(GetMesh(), FName("Weapon_Socket"));
+	
+	// Component Ref
+	ActionLockOnComponentRef=CreateDefaultSubobject<UActionLockOnComponent>("ActionLockOnComponent");
+	
 }
 
 void AActionPlayer::BeginPlay()
 {
 	Super::BeginPlay();
+	
+	ActionPlayerAnimInstanceRef=Cast<UActionPlayerAnimInstance>(GetMesh()->GetAnimInstance());
+	
+	if (ActionLockOnComponentRef)
+	{
+		ActionLockOnComponentRef->OnUpdateTargetDelegate.AddDynamic(this,&AActionPlayer::OnTargetUpdated);
+	}
+	
 	if(APlayerController* PC =Cast<APlayerController>(Controller))
 	{
 		if(UEnhancedInputLocalPlayerSubsystem* Subsystem =ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(PC->GetLocalPlayer()))
@@ -43,6 +58,7 @@ void AActionPlayer::BeginPlay()
 			Subsystem->AddMappingContext(DefaultMappingContext,0);
 		}
 	}
+	
 }
 
 void AActionPlayer::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
@@ -81,5 +97,13 @@ void AActionPlayer::Look(const FInputActionValue& Value)
 
 void AActionPlayer::LockCamera()
 {
-	ActionLockOnComponent->StartLockOn();
+	ActionLockOnComponentRef->ToggleLockOn();
+}
+
+void AActionPlayer::OnTargetUpdated(AActor* TargetActor)
+{
+	if (ActionPlayerAnimInstanceRef)
+	{
+		ActionPlayerAnimInstanceRef->bIsCombat = IsValid(TargetActor);
+	}
 }

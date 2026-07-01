@@ -5,9 +5,11 @@
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
 #include "InputActionValue.h"
+#include "ActionCombat/Interface/ActionPlayer_Interface.h"
 #include "ActionPlayer.generated.h"
 
 
+class UActionPlayerAnimInstance;
 class UActionLockOnComponent;
 class USpringArmComponent;
 class UCameraComponent;
@@ -16,7 +18,7 @@ class UInputAction;
 
 
 UCLASS()
-class ACTIONCOMBAT_API AActionPlayer : public ACharacter
+class ACTIONCOMBAT_API AActionPlayer : public ACharacter , public IActionPlayer_Interface
 {
 	GENERATED_BODY()
 	
@@ -32,6 +34,9 @@ protected:
 
 	UPROPERTY(VisibleAnywhere)
 	TObjectPtr<UCameraComponent> FollowCamera;
+	
+	UPROPERTY(VisibleAnywhere)
+	TObjectPtr<UStaticMeshComponent> WeaponMesh;
 
 	// Enhanced Input
 	UPROPERTY(EditAnywhere, Category="Input")
@@ -49,14 +54,20 @@ protected:
 	UPROPERTY(EditAnywhere, Category="Input")
 	TObjectPtr<UInputAction> LockCameraAction;
 
-	//Component
+	//Component Ref
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Components")
-	TObjectPtr<UActionLockOnComponent>ActionLockOnComponent;
+	TObjectPtr<UActionLockOnComponent>ActionLockOnComponentRef;
+	
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Components")
+	TObjectPtr<UActionPlayerAnimInstance> ActionPlayerAnimInstanceRef;
+	
 	
 	void Move(const FInputActionValue& Value);
 	void Look(const FInputActionValue& Value);
 	void LockCamera();
 	
+	UFUNCTION()
+	void OnTargetUpdated(AActor* TargetActor);
 	
 	virtual void BeginPlay() override;
 	

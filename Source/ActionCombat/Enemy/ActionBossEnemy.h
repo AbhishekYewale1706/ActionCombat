@@ -3,11 +3,12 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "ActionCombat/Interface/ActionEnemy_Interface.h"
 #include "GameFramework/Character.h"
 #include "ActionBossEnemy.generated.h"
 
 UCLASS()
-class ACTIONCOMBAT_API AActionBossEnemy : public ACharacter
+class ACTIONCOMBAT_API AActionBossEnemy : public ACharacter, public IActionEnemy_Interface
 {
 	GENERATED_BODY()
 
